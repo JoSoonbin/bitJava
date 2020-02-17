@@ -1,4 +1,4 @@
-package com.javaex.practice03.problem07;
+package com.javaex.chapter05.AccountFile;
 
 public class Account {
 	private String accountNo;
@@ -23,8 +23,11 @@ public class Account {
 			System.out.println("잔액이 부족합니다!");
 	}
 
+//	public void showBalance() {
+//		System.out.println(balance);
+//	}
+	
 	public int showBalance() {
-		System.out.println(balance);
 		return balance;
 	}
 }
