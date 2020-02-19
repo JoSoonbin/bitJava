@@ -11,9 +11,14 @@ import java.util.Date;
 import java.util.Scanner;
 
 import com.javaex.practice03.problem07.Account;
-
+/*
+ * 2020.02.19
+ * 조순빈
+ * 
+ */
 public class AccountApp {
 	public static void main(String[] args) {
+		System.out.println("by 조순빈");
 		Scanner sc = new Scanner(System.in);
 		System.out.print(">>계좌번호를 입력하세요: ");
 		String line = sc.nextLine();

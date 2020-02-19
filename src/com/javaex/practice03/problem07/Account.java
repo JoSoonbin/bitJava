@@ -1,5 +1,10 @@
 package com.javaex.practice03.problem07;
 
+/*
+ * 2020.02.19
+ * 조순빈
+ * 
+ */
 public class Account {
 	private String accountNo, name, phone;
 	private int balance;
