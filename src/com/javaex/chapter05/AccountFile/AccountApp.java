@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -31,6 +32,7 @@ public class AccountApp {
 			String accBalance = "-";
 			boolean fileExist = false;
 			Account account = new Account(line);
+			ArrayList<Account> accInfo = new ArrayList<Account>();
 
 			// 고객 정보 가져오기
 			if (fileInfo.exists()) {
@@ -39,13 +41,18 @@ public class AccountApp {
 				String info;
 				String[] s;
 				while ((info = br.readLine()) != null) {
-					System.out.println(info);
 					s = info.split(" ");
-//					account.setName(s[2]);
-//					account.setPhone(s[3]);
-					for(int i=0; i<s.length; i++) {
-						System.out.println(i+">>"+s[i]);
-					}
+					String accNo = s[0];
+					String accName = s[1];
+					String accPhone = s[2];
+					accInfo.add(new Account(accNo, accName, accPhone));
+				}
+			}
+			
+			// 현재 조회하는 고객 정보 저장
+			for (int i = 0; i < accInfo.size(); i++) {
+				if (line.equals(accInfo.get(i).accountNo())) {
+					account = new Account(line, accInfo.get(i).getName(), accInfo.get(i).getPhone());
 				}
 			}
 
@@ -86,12 +93,13 @@ public class AccountApp {
 
 			if (fileExist)
 				account.setBalance(Integer.parseInt(accBalance, 10));
-			System.out.println("계좌: "+line+", 성명: "+account.getName()+", 연락처: "+account.getPhone());
+			System.out.println("계좌: " + line + ", 성명: " + account.getName() + ", 연락처: " + account.getPhone());
+			
 			while (run) {
 				System.out.println();
-				System.out.println("------------------------------");
-				System.out.println(" 1.예금 | 2.출금 | 3.잔고 | 4.종료");
-				System.out.println("------------------------------");
+				System.out.println("-------------------------------------------");
+				System.out.println(" 1.예금 | 2.출금 | 3.잔고 | 4.거래내역조회 | 5.종료");
+				System.out.println("-------------------------------------------");
 				System.out.print("선택> ");
 				int menuNo = sc.nextInt();
 				switch (menuNo) {
@@ -112,6 +120,40 @@ public class AccountApp {
 					account.showBalance();
 					break;
 				case 4:
+					String[] s;
+					System.out.print("조회 시작 날짜와 끝 날짜를 입력해주세요(yyyy-MM-dd)\n시작>> ");
+					String dayStart = sc.next();
+					System.out.print("종료>> ");
+					String dayEnd = sc.next();
+
+					FileReader fr = new FileReader(file);
+					BufferedReader br = new BufferedReader(fr);
+					String info;
+					ArrayList<Account> lineInfo = new ArrayList<Account>();
+
+					System.out.println("-------------------------------------------\n"
+							+ "조회결과>> 날짜\t\t예금\t출금\t잔액\n-------------------------------------------");
+					
+					while ((info = br.readLine()) != null) {
+						s = info.split("\t");
+
+						if (s.length == 4) {
+							String date = s[0];
+							int inMoney = Integer.parseInt(s[1]);
+							int outMoney = Integer.parseInt(s[2], 10);
+							int totalMoney = Integer.parseInt(s[3], 10);
+							lineInfo.add(new Account(date, inMoney, outMoney, totalMoney));
+						}
+					}
+					// 날짜 비교해서 거래내역 출력
+					for (int i = 0; i < lineInfo.size(); i++) {
+						if (changeDateType(dayStart) <= changeDateType(lineInfo.get(i).getDate())) {
+							if (changeDateType(dayEnd) >= changeDateType(lineInfo.get(i).getDate()))
+								lineInfo.get(i).checkAccount();
+						}
+					}
+					break;
+				case 5:
 					System.out.println("종료");
 					fout.close();
 					sc.close();
@@ -126,5 +168,17 @@ public class AccountApp {
 			System.out.println("입출력오류");
 			e.printStackTrace();
 		}
+
+	}
+
+	public static int changeDateType(String day) {
+		String[] yMd = day.split("-");
+		String s = "";
+
+		for (int i = 0; i < yMd.length; i++) {
+			s = s.concat(yMd[i]);
+		}
+		int date = Integer.parseInt(s);
+		return date;
 	}
 }
